@@ -7,7 +7,7 @@ class PreviewScreen extends Screen {
   const PreviewScreen({
     super.key, 
     required super.nextScreen,
-    required this.results,
+    required this.results, 
   });
 
   @override

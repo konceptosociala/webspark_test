@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:webspark_test/screens/index.dart';
 
 class ResultScreen extends Screen {
-  const ResultScreen({super.key, required super.nextScreen});
+  const ResultScreen({
+    super.key, 
+    required super.nextScreen, 
+  });
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();

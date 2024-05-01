@@ -10,7 +10,7 @@ abstract class Screen extends StatefulWidget {
 
   const Screen({
     super.key, 
-    required this.nextScreen,
+    required this.nextScreen, 
   });
 
   String title();

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webspark_test/db/keystorage.dart';
 import 'package:webspark_test/screens/index.dart';
 import 'package:webspark_test/utils/index.dart';
+import 'package:webspark_test/widgets/index.dart';
 
 class HomeScreen extends Screen {
-  const HomeScreen({super.key, required super.nextScreen});
+  const HomeScreen({
+    super.key, 
+    required super.nextScreen, 
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -46,26 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _uriInputControler,
           keyboardType: TextInputType.number,
         ),
-        // const SizedBox(height: 32),
-        Expanded(child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue[300], // Background color
-                foregroundColor: Colors.black, // Text color
-                side: const BorderSide(
-                  color: Colors.blue, // Border color
-                  width: 2.0, // Border width
-                ),
-                fixedSize: const Size(double.maxFinite, 60)
-              ),
-              onPressed: () => _processUri(_uriInputControler.text),
-              child: const Text('Start counting process'),
-            ),
-          ]
-        ))
+        BottomButton(
+          label: 'Start counting process', 
+          onPressed: () => _processUri(_uriInputControler.text),
+        ),
       ]),
     );
   }
@@ -100,8 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadCurrentUri() async {
     final SharedPreferences prefs = await _prefs;
 
-    String? uriString = prefs.getString("current_url");
-    if (uriString != null) {
+    String uriString = prefs.getString(KeyStorage.currentUrl)??KeyStorage.currentUrlDefault;
+    if (uriString != '') {
       setState(() {
         _currentUri = Uri.tryParse(uriString);
         _uriInputControler.text = _currentUri.toString();
