@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 
-void dialog(BuildContext context, String title, String message) {
+Future<void> dialog(BuildContext context, String title, String message) async {
+  await Future.delayed(const Duration(milliseconds: 250));
   showDialog<String>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
