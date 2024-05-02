@@ -9,6 +9,8 @@ class Data {
   final Cell end;
   final Grid grid;
 
+  List<Cell>? shortestPath;
+
   Data({
     required this.start, 
     required this.end, 

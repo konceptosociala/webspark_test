@@ -4,8 +4,10 @@ import 'package:webspark_test/model/index.dart';
 
 class Grid {
   late final HashSet<Cell> cells;
+  late final int width;
+  late final int height;
 
-  Grid({required List<Cell> cells}):
+  Grid({required List<Cell> cells, required this.width, required this.height}):
     cells = HashSet.from(cells);
 
   /// Create a grid from ".x" system - list of strings with X-s (for blocked cells) and dots (for non-blocked cells)
@@ -18,6 +20,8 @@ class Grid {
   Grid.fromDotX(List<DotX> dotxs) {
     HashSet<Cell> cells = HashSet();
 
+    height = dotxs.length;
+    width = dotxs[0].value.length;
     for (var y = 0; y < dotxs.length; y++) {
       DotX dotx = dotxs[y];
       for (var x = 0; x < dotx.value.length; x++) {

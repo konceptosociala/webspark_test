@@ -2,31 +2,98 @@
 
 import 'package:flutter/material.dart';
 import 'package:webspark_test/model/index.dart';
+import 'package:webspark_test/screens/index.dart';
+import 'package:webspark_test/widgets/index.dart';
 
 class PathFinderWidget extends StatefulWidget {
+  final Function(Screen screen) nextScreen;
   final List<Data> data;
-  const PathFinderWidget({super.key, required this.data});
+  
+  const PathFinderWidget({super.key, required this.data, required this.nextScreen});
 
   @override
   State<PathFinderWidget> createState() => _PathFinderWidgetState();
 }
 
 class _PathFinderWidgetState extends State<PathFinderWidget> {
-  @override
-  Widget build(BuildContext context) {
-    throw UnimplementedError();
+  late List<Data> data;
+
+  double completionPercentage = 0.0;
+  int taskNumber = 0;
+  int nodes = 1;
+  int result = 0;
+  String text = "";
+  bool sendButton = false;
+
+  @override 
+  void initState() {
+    super.initState();
+    data = widget.data;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (int i = 0; i < data.length; i++) {
+        taskNumber = i+1;
+
+        List<Cell> shortestPath = findPath(data[i]);
+        data[i].shortestPath = shortestPath;
+      }
+      
+      completionPercentage = 1.0;
+      text = "All calculations has finished, you can send your results to server\n\n100%";
+      sendButton = true;
+    });
   }
 
-  static List findPath(List<List> list, start, end) {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Expanded(child: Text('')),
+              Text(text, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              CircularProgressIndicator(value: completionPercentage),
+              sendButton
+                ? BottomButton(
+                    label: 'Send results to server', 
+                    onPressed: () => widget.nextScreen(ResultScreen(
+                      results: data,
+                      nextScreen: widget.nextScreen,
+                    )),
+                  )
+                : const Expanded(child: Text('')),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  List<Cell> findPath(Data data) {
+    return _findPath(data.grid.pairsRaw(), data.start, data.end).cast<Cell>();
+  }
+
+  List _findPath(List<List> list, start, end) {
     var graph = _pairsListToGraphMap(list);
     var predecessors = _singleSourceShortestPaths(graph, start, end);
+
+    nodes = graph.length;
+    result = 0;
 
     return _extractShortestPathFromPredecessorList(predecessors, end);
   }
 
-  static Map _singleSourceShortestPaths(graph, s, end) {
+  Map _singleSourceShortestPaths(graph, s, end) {
     /// Predecessor map for each node that has been encountered.
-    /// node ID => predecessor node ID
+    /// node ID => predecessor nodsleep(Duration(seconds:1));e ID
     var predecessors = {};
 
     /// Costs of shortest paths from s to all nodes encountered.
@@ -84,17 +151,21 @@ class _PathFinderWidgetState extends State<PathFinderWidget> {
           }
         }
       });
-    }
 
-    if (end != null && costs[end] == null) {
-      // print('Could not find a path');
+      setState(() {
+        result++;
+        completionPercentage = result/nodes;
+        text = "Task $taskNumber\n\n${(completionPercentage*100).toInt()}%";
+      });
+
+      Future.delayed(const Duration(milliseconds: 50));
     }
 
     return predecessors;
   }
 
   /// Extract shortest path from predecessor list
-  static List _extractShortestPathFromPredecessorList(predecessors, end) {
+  List _extractShortestPathFromPredecessorList(predecessors, end) {
     var nodes = [];
     var u = end;
     while (u != null) {
@@ -108,7 +179,7 @@ class _PathFinderWidgetState extends State<PathFinderWidget> {
   /// Input: [[0, 2], [3, 4], [0, 6], [5, 6], [2, 3], [0, 1], [0, 4], [0, 113], [113, 114], [111, 112]]
   ///
   /// OutPut:  {0: {2: 1, 6: 1, 1: 1, 4: 1, 113: 1}, 2: {0: 1, 3: 1}, 6: {0: 1, 5: 1}, 1: {0: 1}, 4: {0: 1, 3: 1}, 113: {0: 1, 114: 1}, 3: {2: 1, 4: 1}, 5: {6: 1}, 114: {113: 1}, 111: {112: 1}, 112: {111: 1}}
-  static Map _pairsListToGraphMap(List<List> data) {
+  Map _pairsListToGraphMap(List<List> data) {
     Map layout = {};
     Map graph = {};
     Set ids = {};

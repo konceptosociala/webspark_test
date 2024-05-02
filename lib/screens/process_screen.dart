@@ -46,7 +46,7 @@ class _ProcessScreenState extends State<ProcessScreen> with TickerProviderStateM
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data! case Ok(:final ok)) {
-            return PathFinderWidget(data: ok);
+            return PathFinderWidget(data: ok, nextScreen: widget.nextScreen);
           } else if(snapshot.data! case Err(:final err)) {
             return Text(err);
           }

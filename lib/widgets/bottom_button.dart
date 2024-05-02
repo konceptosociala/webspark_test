@@ -24,7 +24,7 @@ class BottomButton extends StatelessWidget {
               color: Colors.blue, // Border color
               width: 2.0, // Border width
             ),
-            fixedSize: const Size(double.maxFinite, 60)
+            fixedSize: Size(MediaQuery.of(context).size.width-32, 60)
           ),
           onPressed: onPressed,
           child: Text(label),
