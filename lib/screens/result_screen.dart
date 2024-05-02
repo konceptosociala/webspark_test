@@ -25,8 +25,13 @@ class ResultScreen extends Screen {
 class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(children: widget.results
-      .map((data) => TextButton(
+    return SingleChildScrollView(child: Column(children: widget.results
+      .map((data) => ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white, // Background color
+          foregroundColor: Colors.black, // Text color
+          fixedSize: Size(MediaQuery.of(context).size.width, 40)
+        ),
         onPressed: () => widget.nextScreen(PreviewScreen(
           nextScreen: widget.nextScreen, 
           resultScreen: widget,
@@ -35,6 +40,6 @@ class _ResultScreenState extends State<ResultScreen> {
         child: Text(pathToString(data.shortestPath!)),
       ))
       .toList()
-    );
+    ));
   }
 }
